@@ -14,31 +14,30 @@ import datetime
 import threading
 from magicrf import m100
 
-
 import serial.tools.list_ports
+
 PLIST = list(serial.tools.list_ports.comports())
-if (len(PLIST) <= 0):
+if len(PLIST) <= 0:
     sys.stderr.write('Could not find serial port !!!\n')
     sys.exit(1)
 
 SERIAL_PORT = list(PLIST[0])[0]
 print(SERIAL_PORT)
 
-
 QUEUE_READER = queue.Queue(2048)
 
-
 READER = m100(SERIAL_PORT)
+
 
 def receive_callback(data):
     QUEUE_READER.put(data)
 
 
-READER.rxcallback( receive_callback )
+READER.rxcallback(receive_callback)
 READER.start()
 
 
-def realtime_threading( queue ):
+def realtime_threading(queue):
     data = ''
     while True:
         data = queue.get()
@@ -54,12 +53,12 @@ def realtime_threading( queue ):
             print('{0} -> {1} RSSI: -{2} dBm'.format(timenow, epc, int(rssi, 16)))
     queue.task_done()
 
-REALTIME_THD = threading.Thread( target=realtime_threading, args=( QUEUE_READER, ) )
+
+REALTIME_THD = threading.Thread(target=realtime_threading, args=(QUEUE_READER,))
 REALTIME_THD.setDaemon(True)
 REALTIME_THD.start()
 
-
-for _ in ( READER.power(22), READER.mode(), READER.hfss(m100.HFSS_AUTO), READER.param(q=4) ):
+for _ in (READER.power(22), READER.mode(), READER.hfss(m100.HFSS_AUTO), READER.param(q=4)):
     time.sleep(0.1)
 
 while True:

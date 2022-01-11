@@ -1,0 +1,2 @@
+-e git+https://github.com/pk85-sp3ct0r/libmagicrf.git@bbb6f429180fe7227da21d71336eec196c9b8046#egg=magicrf
+pyserial==3.5
